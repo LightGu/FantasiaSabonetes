@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import {
   ArrowLeft, ArrowRight, Check, Leaf, LockKeyhole,
   Menu, Minus, PackageCheck, Pencil, Plus, Search, ShieldCheck, ShoppingBag,
-  Sparkles, Trash2, Truck, UserRound, X
+  Sparkles, Trash2, Truck, X
 } from 'lucide-react';
 import './styles.css';
 
@@ -20,6 +20,7 @@ const seedProducts = [
 
 const money = value => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const load = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
+const ADMIN_PATH = '/gestao-fantasia';
 
 function App() {
   const [products, setProducts] = useState(() => load('mae-products', seedProducts));
@@ -28,7 +29,7 @@ function App() {
   const [selected, setSelected] = useState(null);
   const [cartOpen, setCartOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [admin, setAdmin] = useState(false);
+  const [admin, setAdmin] = useState(() => window.location.pathname === ADMIN_PATH);
   const [adminOpen, setAdminOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [toast, setToast] = useState('');
@@ -53,16 +54,14 @@ function App() {
   const go = (next) => { setView(next); setCartOpen(false); setMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
   return <div className="app">
-    {admin && <div className="admin-strip"><span><ShieldCheck size={14}/> Modo administrador</span><button onClick={() => setAdminOpen(true)}>Gerenciar produtos</button><button onClick={() => setAdmin(false)}>Sair</button></div>}
+    {admin && <div className="admin-strip"><span><ShieldCheck size={14}/> Modo administrador</span><button onClick={() => setAdminOpen(true)}>Gerenciar produtos</button><button onClick={() => { setAdmin(false); setAdminOpen(false); window.history.replaceState({}, '', '/'); }}>Sair</button></div>}
     <header className="header">
       <button className="icon-button mobile-only" onClick={() => setMenuOpen(!menuOpen)} aria-label="Abrir menu"><Menu/></button>
       <button className="brand" onClick={() => go('shop')}><span>FANTASIA</span><small>saboaria botânica</small></button>
       <nav className={menuOpen ? 'nav open' : 'nav'}>
         <button onClick={() => go('shop')}>Loja</button><button onClick={() => go('story')}>Nossa essência</button><button onClick={() => go('contact')}>Contato</button>
-        <button className="mobile-login" onClick={() => { setAdmin(true); setMenuOpen(false); setToast('Modo administrador ativado'); }}><UserRound size={17}/> Área administrativa</button>
       </nav>
       <div className="header-actions">
-        <button className="icon-button desktop-only" onClick={() => setAdmin(true)} aria-label="Entrar como administrador"><UserRound/></button>
         <button className="bag-button" onClick={() => setCartOpen(true)} aria-label={`Sacola com ${count} itens`}><ShoppingBag/><span>{count}</span></button>
       </div>
     </header>
