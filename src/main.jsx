@@ -1,28 +1,34 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
-  ArrowLeft, ArrowRight, BookOpen, Check, Download, Leaf, LockKeyhole, LogIn,
+  ArrowLeft, ArrowRight, Check, Leaf, LockKeyhole, LogIn,
   Menu, Minus, PackageCheck, Pencil, Plus, Search, ShieldCheck, ShoppingBag,
   Sparkles, Trash2, Truck, UserRound, X
 } from 'lucide-react';
 import './styles.css';
 
-const seedProducts = [
-  { id: 1, name: 'Alecrim & Sálvia', short: 'Herbal, fresco e restaurador.', description: 'Uma combinação verde e aromática para transformar o banho em um momento de renovação. O alecrim traz frescor, enquanto a sálvia completa a experiência com seu aroma herbal.', image: '/products/alecrim-salvia.jpg', notes: ['herbal', 'fresco'], stock: 14, price: 18, featured: true, active: true },
-  { id: 2, name: 'Manjericão & Alecrim', short: 'Vibrante, verde e revigorante.', description: 'Notas verdes de manjericão encontram o frescor marcante do alecrim. Uma escolha energizante para começar o dia com leveza e disposição.', image: '/products/manjericao-alecrim.jpg', notes: ['verde', 'energizante'], stock: 9, price: 18, active: true },
-  { id: 3, name: 'Lavanda & Alecrim', short: 'Floral, sereno e equilibrado.', description: 'O aroma reconfortante da lavanda ganha um toque fresco de alecrim. Ideal para um banho tranquilo no fim do dia.', image: '/products/lavanda-alecrim.jpg', notes: ['floral', 'calmante'], stock: 12, price: 18, featured: true, active: true },
-  { id: 4, name: 'Camomila & Sálvia', short: 'Suave, delicado e acolhedor.', description: 'Uma mistura delicada, de perfume macio e herbal. Camomila e sálvia criam um banho acolhedor para desacelerar.', image: '/products/camomila-salvia.jpg', notes: ['suave', 'herbal'], stock: 7, price: 18, active: true },
-  { id: 5, name: 'Hortelã & Alecrim', short: 'Refrescante, limpo e intenso.', description: 'Hortelã e alecrim se unem em um aroma vivo e refrescante. Perfeito para os dias quentes ou para aquele banho que desperta.', image: '/products/hortela-alecrim.jpg', notes: ['fresco', 'revigorante'], stock: 16, price: 18, featured: true, active: true },
-  { id: 6, name: 'Eucalipto & Sálvia', short: 'Botânico, profundo e fresco.', description: 'Uma fragrância botânica de presença, equilibrando o eucalipto fresco com o perfil terroso e elegante da sálvia.', image: '/products/eucalipto-salvia.jpg', notes: ['botânico', 'intenso'], stock: 5, price: 18, active: true },
-  { id: 7, name: 'Capim-limão & Alecrim', short: 'Cítrico, leve e ensolarado.', description: 'O brilho cítrico do capim-limão encontra as notas verdes do alecrim em uma combinação alegre, limpa e surpreendente.', image: '/products/capim-limao-alecrim.jpg', notes: ['cítrico', 'leve'], stock: 10, price: 18, active: true },
-  { id: 8, name: 'Erva-doce & Alecrim', short: 'Doce, herbal e confortável.', description: 'Um aroma delicadamente adocicado, envolvido pelo frescor verde do alecrim. Uma combinação familiar e confortável.', image: '/products/erva-doce-alecrim.jpg', notes: ['doce', 'confortável'], stock: 8, price: 18, active: true }
+const aromaNames = [
+  'Alecrim & Sálvia','Manjericão & Alecrim','Lavanda & Alecrim','Camomila & Sálvia','Hortelã & Alecrim','Eucalipto & Sálvia','Capim-limão & Alecrim','Louro & Alecrim','Calêndula & Alecrim','Camomila, Lavanda & Alecrim','Arruda & Alecrim','Sálvia, Alecrim & Lavanda',
+  'Alecrim & Louro','Sálvia & Louro','Manjericão & Louro','Eucalipto & Alecrim','Lavanda & Sálvia','Cedro & Alecrim','Manjericão, Alecrim & Sálvia','Louro, Sálvia & Alecrim','Arruda & Sálvia','Manjericão, Louro & Alecrim','Eucalipto, Louro & Sálvia','Louro, Alecrim, Sálvia & Lavanda',
+  'Canela & Laranja','Louro & Manjericão','Alecrim & Laranja','Camomila & Canela','Hortelã & Louro','Lavanda, Laranja & Alecrim','Canela & Louro','Manjericão & Laranja','Alecrim & Canela','Louro & Camomila','Hortelã, Manjericão & Louro','Calêndula, Laranja & Louro',
+  'Rosas & Lavanda','Camomila & Lavanda','Rosas & Camomila','Calêndula & Lavanda','Rosas & Calêndula','Lavanda & Rosas','Camomila & Rosas','Jasmim & Lavanda','Gerânio & Rosas','Calêndula, Camomila & Rosas','Lavanda, Gerânio & Camomila','Rosas, Lavanda & Calêndula',
+  'Lavanda & Camomila','Melissa & Lavanda','Camomila & Melissa','Capim-limão & Lavanda','Erva-doce & Camomila','Calêndula & Melissa','Jasmim & Camomila','Manjerona & Lavanda','Erva-doce & Lavanda','Camomila, Melissa & Lavanda','Capim-limão, Camomila & Lavanda','Melissa, Camomila & Erva-doce',
+  'Alecrim & Capim-limão','Laranja & Alecrim','Hortelã & Capim-limão','Calêndula & Laranja','Manjericão & Hortelã','Lavanda & Laranja','Alecrim, Hortelã & Laranja','Calêndula, Alecrim & Capim-limão','Manjericão, Laranja & Alecrim','Lavanda, Calêndula & Laranja','Hortelã, Alecrim & Calêndula','Alecrim, Laranja, Lavanda & Calêndula'
 ];
+const categoryData = [
+  { until: 12, label: 'limpeza e renovação', short: 'Herbal, fresco e renovador.' },
+  { until: 24, label: 'proteção e força', short: 'Marcante, botânico e protetor.' },
+  { until: 36, label: 'prosperidade e caminhos', short: 'Cítrico, vibrante e acolhedor.' },
+  { until: 48, label: 'harmonia e amor-próprio', short: 'Floral, delicado e harmonioso.' },
+  { until: 60, label: 'equilíbrio e tranquilidade', short: 'Suave, sereno e reconfortante.' },
+  { until: 72, label: 'boas energias e renovação', short: 'Luminoso, fresco e energizante.' }
+];
+const seedProducts = aromaNames.map((name, index) => { const id=index+1; const category=categoryData.find(item=>id<=item.until); return { id, name, short: category.short, description: `Uma combinação artesanal de ${name.toLowerCase()}, criada para trazer ${category.label} ao seu ritual de banho. Produzida em pequenos lotes, com acabamento único e aroma botânico.`, image: `/products/guia-${String(id).padStart(2,'0')}.jpg`, notes: [category.label, id<=24?'herbal':id<=36?'cítrico':id<=60?'floral':'fresco'], stock: 10, price: 18, featured: [1,3,25,37,50,72].includes(id), active: true }; });
 
 const money = value => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const load = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL?.replace(/\/$/, '');
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const guidePages = Array.from({ length: 72 }, (_, index) => ({ number: index + 1, image: `/guia/pagina-${String(index + 1).padStart(2, '0')}.jpg` }));
 
 async function adminSignIn(email, password) {
   if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('O acesso administrativo ainda não foi configurado neste ambiente.');
@@ -36,7 +42,7 @@ async function adminSignIn(email, password) {
 }
 
 function App() {
-  const [products, setProducts] = useState(() => load('mae-products', seedProducts));
+  const [products, setProducts] = useState(() => load('mae-products-v2', seedProducts));
   const [cart, setCart] = useState(() => load('mae-cart', []));
   const [view, setView] = useState('shop');
   const [selected, setSelected] = useState(null);
@@ -50,7 +56,7 @@ function App() {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('todos');
 
-  useEffect(() => localStorage.setItem('mae-products', JSON.stringify(products)), [products]);
+  useEffect(() => localStorage.setItem('mae-products-v2', JSON.stringify(products)), [products]);
   useEffect(() => localStorage.setItem('mae-cart', JSON.stringify(cart)), [cart]);
   useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(''), 2600); return () => clearTimeout(t); }, [toast]);
   useEffect(() => { document.body.style.overflow = (cartOpen || selected || loginOpen || adminOpen || editing) ? 'hidden' : ''; }, [cartOpen, selected, loginOpen, adminOpen, editing]);
@@ -76,7 +82,7 @@ function App() {
       <button className="icon-button mobile-only" onClick={() => setMenuOpen(!menuOpen)} aria-label="Abrir menu"><Menu/></button>
       <button className="brand" onClick={() => go('shop')}><span>FANTASIA</span><small>saboaria botânica</small></button>
       <nav className={menuOpen ? 'nav open' : 'nav'}>
-        <button onClick={() => go('shop')}>Loja</button><button onClick={() => go('guide')}>Meu guia</button><button onClick={() => go('story')}>Nossa essência</button><button onClick={() => go('contact')}>Contato</button>
+        <button onClick={() => go('shop')}>Loja</button><button onClick={() => go('story')}>Nossa essência</button><button onClick={() => go('contact')}>Contato</button>
       </nav>
       <div className="header-actions">
         <button className="login-button" onClick={() => admin ? setAdminOpen(true) : setLoginOpen(true)}><UserRound/><span>{admin ? 'Minha área' : 'Entrar'}</span></button>
@@ -99,12 +105,11 @@ function App() {
       <section className="ritual"><div><p className="eyebrow">mais que sabonete</p><h2>Um pequeno ritual, só seu.</h2><p>As formas, cores e pequenas variações contam a história de um processo feito à mão. Nenhuma barra é exatamente igual à outra — e essa é a beleza.</p><button className="text-button" onClick={() => go('story')}>Conheça a nossa essência <ArrowRight size={17}/></button></div><img src="/products/lavanda-alecrim.jpg" alt="Sabonetes de lavanda feitos artesanalmente"/></section>
     </main>}
     {view === 'story' && <SimplePage eyebrow="a nossa essência" title="Cuidado que começa na escolha." text="A Fantasia nasceu do desejo de transformar um hábito cotidiano em um momento de presença. Produzimos em pequenos lotes, respeitando o tempo de cada processo e escolhendo combinações botânicas que despertam os sentidos." image="/products/camomila-salvia.jpg"/>}
-    {view === 'guide' && <GuidePage/>}
     {view === 'contact' && <ContactPage/>}
     {view === 'checkout' && <Checkout cart={cart} subtotal={subtotal} onBack={() => go('shop')} onDone={() => { setCart([]); go('success'); }}/>}
     {view === 'success' && <Success onBack={() => go('shop')}/>}
 
-    <footer><div className="footer-brand"><b>FANTASIA</b><span>saboaria botânica</span><p>Feito à mão, com tempo e intenção.</p></div><div><strong>Navegue</strong><button onClick={() => go('shop')}>Loja</button><button onClick={() => go('guide')}>Meu guia</button><button onClick={() => go('story')}>Nossa essência</button><button onClick={() => go('contact')}>Contato</button></div><div><strong>Fale com a gente</strong><a href="mailto:oi@fantasiasaboaria.com.br">oi@fantasiasaboaria.com.br</a><a href="#instagram">@fantasiasaboaria</a></div><div className="newsletter"><strong>Cartas da Fantasia</strong><p>Novos aromas e pequenos cuidados, de vez em quando.</p><label><input placeholder="seu melhor e-mail"/><button aria-label="Cadastrar e-mail"><ArrowRight/></button></label></div></footer>
+    <footer><div className="footer-brand"><b>FANTASIA</b><span>saboaria botânica</span><p>Feito à mão, com tempo e intenção.</p></div><div><strong>Navegue</strong><button onClick={() => go('shop')}>Loja</button><button onClick={() => go('story')}>Nossa essência</button><button onClick={() => go('contact')}>Contato</button></div><div><strong>Fale com a gente</strong><a href="mailto:oi@fantasiasaboaria.com.br">oi@fantasiasaboaria.com.br</a><a href="#instagram">@fantasiasaboaria</a></div><div className="newsletter"><strong>Cartas da Fantasia</strong><p>Novos aromas e pequenos cuidados, de vez em quando.</p><label><input placeholder="seu melhor e-mail"/><button aria-label="Cadastrar e-mail"><ArrowRight/></button></label></div></footer>
     <div className="copyright">© 2026 Fantasia Saboaria. Feito com calma no Brasil.</div>
 
     {selected && <ProductModal product={selected} onClose={() => setSelected(null)} onAdd={() => { add(selected); setSelected(null); }}/>}
@@ -135,8 +140,6 @@ function AdminPanel({products,onClose,onEdit,onToggle}) { return <div className=
 function EditProduct({product,onClose,onSave}) { const [form,setForm]=useState({...product}); return <div className="modal-wrap"><button className="modal-shade" onClick={onClose}/><form className="edit-modal" onSubmit={e=>{e.preventDefault();onSave(form)}}><div className="drawer-head"><div><p className="eyebrow">editar catálogo</p><h2>{product.name}</h2></div><button type="button" className="close" onClick={onClose}><X/></button></div><label>Nome do produto<input value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/></label><label>Descrição curta<input value={form.short} onChange={e=>setForm({...form,short:e.target.value})}/></label><label>Descrição completa<textarea rows="5" value={form.description} onChange={e=>setForm({...form,description:e.target.value})}/></label><div className="field-grid"><label>Preço (R$)<input type="number" step="0.01" min="0" value={form.price} onChange={e=>setForm({...form,price:Number(e.target.value)})}/></label><label>Estoque<input type="number" min="0" value={form.stock} onChange={e=>setForm({...form,stock:Number(e.target.value)})}/></label></div><label className="check-label"><input type="checkbox" checked={form.featured||false} onChange={e=>setForm({...form,featured:e.target.checked})}/> Marcar como queridinho</label><button className="primary full">Salvar alterações <Check/></button></form></div> }
 
 function LoginModal({onClose,onSuccess}) { const [email,setEmail]=useState(''); const [password,setPassword]=useState(''); const [error,setError]=useState(''); const [loading,setLoading]=useState(false); const submit=async(e)=>{e.preventDefault();setError('');setLoading(true);try{onSuccess(await adminSignIn(email,password));}catch(err){setError(err.message);}finally{setLoading(false);}}; return <div className="modal-wrap" role="dialog" aria-modal="true" aria-labelledby="login-title"><button className="modal-shade" onClick={onClose}/><form className="login-modal" onSubmit={submit}><button type="button" className="close" onClick={onClose} aria-label="Fechar"><X/></button><span className="login-icon"><UserRound/></span><p className="eyebrow">acesso reservado</p><h2 id="login-title">Entrar na sua conta</h2><p>O login é opcional. Clientes podem explorar o guia e fazer compras sem criar uma conta.</p><label>E-mail<input required type="email" autoComplete="username" value={email} onChange={e=>setEmail(e.target.value)} placeholder="voce@email.com"/></label><label>Senha<input required type="password" autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Sua senha"/></label>{error && <p className="login-error" role="alert">{error}</p>}<button className="primary full" disabled={loading}>{loading ? 'Entrando…' : <>Entrar <LogIn size={18}/></>}</button><small><LockKeyhole/> Área administrativa protegida</small></form></div> }
-
-function GuidePage(){ const [open,setOpen]=useState(null); useEffect(()=>{document.body.style.overflow=open?'hidden':'';return()=>{document.body.style.overflow='';}},[open]); return <main className="guide-page"><section className="guide-hero"><div><p className="eyebrow">biblioteca visual de sabonetes com ervas</p><h1>Meu guia</h1><p>As 72 receitas do guia reunidas em um só lugar. Abra qualquer página para ler ingredientes, materiais e o passo a passo.</p><a className="primary" href="/guia/meu-guia.pdf" download>Baixar o guia completo <Download size={18}/></a></div><div className="guide-cover"><img src="/guia/pagina-01.jpg" alt="Capa da primeira receita do Meu Guia"/><span><BookOpen/><b>72</b><small>guias</small></span></div></section><section className="guide-library"><div className="section-head"><div><p className="eyebrow">do começo ao fim</p><h2>Todos os guias</h2></div><p>Toque em uma página para ampliar. As imagens foram preservadas como no material original.</p></div><div className="guide-grid">{guidePages.map(page=><button key={page.number} className="guide-card" onClick={()=>setOpen(page)}><img loading="lazy" src={page.image} alt={`Guia ${String(page.number).padStart(2,'0')}`}/><span>Guia {String(page.number).padStart(2,'0')} <ArrowRight size={16}/></span></button>)}</div></section>{open&&<div className="guide-lightbox" role="dialog" aria-modal="true" aria-label={`Guia ${open.number}`}><button className="modal-shade" onClick={()=>setOpen(null)}/><div><button className="close" onClick={()=>setOpen(null)} aria-label="Fechar"><X/></button><img src={open.image} alt={`Guia ${String(open.number).padStart(2,'0')} ampliado`}/><p>Guia {String(open.number).padStart(2,'0')} de 72</p></div></div>}</main> }
 
 function SimplePage({eyebrow,title,text,image}) { return <main className="simple-page"><section><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p>{text}</p><blockquote>“A natureza não tem pressa — e ainda assim, tudo acontece.”</blockquote></div><img src={image}/></section><div className="values"><div><Leaf/><h3>Botânico</h3><p>Aromas inspirados em folhas, flores, ervas e raízes.</p></div><div><Sparkles/><h3>Artesanal</h3><p>Pequenos lotes com cuidado em cada etapa.</p></div><div><PackageCheck/><h3>Consciente</h3><p>Embalagens simples e escolhas com propósito.</p></div></div></main> }
 function ContactPage(){ return <main className="contact-page"><div><p className="eyebrow">estamos por aqui</p><h1>Fale com a Fantasia.</h1><p>Dúvidas sobre aromas, pedidos ou presentes? Vai ser um prazer conversar com você.</p><a className="contact-link" href="https://wa.me/5511999999999"><span>WhatsApp<small>Segunda a sexta, das 9h às 18h</small></span><ArrowRight/></a><a className="contact-link" href="mailto:oi@fantasiasaboaria.com.br"><span>E-mail<small>oi@fantasiasaboaria.com.br</small></span><ArrowRight/></a><a className="contact-link" href="#instagram"><span>Instagram<small>@fantasiasaboaria</small></span><ArrowRight/></a></div><form onSubmit={e=>{e.preventDefault();alert('Mensagem enviada!')}}><label>Seu nome<input required/></label><label>Seu e-mail<input required type="email"/></label><label>Como podemos ajudar?<select><option>Tenho uma dúvida</option><option>Quero acompanhar meu pedido</option><option>Quero fazer uma encomenda</option></select></label><label>Mensagem<textarea required rows="5"/></label><button className="primary">Enviar mensagem <ArrowRight/></button></form></main> }
